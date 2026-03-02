@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbesserungsvorschlag einreichen</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --border: #2d3148;
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(79,142,247,0.08) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 100%, rgba(124,92,252,0.08) 0%, transparent 60%);
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #e8eaf0 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+    animation-delay: 0.1s;
+  }
+
+  .card-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FORM */
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  label .req {
+    color: var(--accent);
+    margin-left: 2px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+  }
+
+  input.error, textarea.error {
+    border-color: var(--error);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  .error-msg {
+    color: var(--error);
+    font-size: 0.72rem;
+    margin-top: 0.3rem;
+    display: none;
+  }
+
+  .error-msg.visible { display: block; }
+
+
+
+  /* SUBMIT BUTTON */
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.9rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* SUCCESS */
+  .success-box {
+    display: none;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .success-box.visible { display: block; }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(34,197,94,0.15);
+    border: 2px solid var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 1.2rem;
+  }
+
+  .success-box h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    color: var(--success);
+    margin-bottom: 0.5rem;
+  }
+
+  .success-box p {
+    color: var(--muted);
+    font-size: 0.87rem;
+  }
+
+  .new-btn {
+    margin-top: 1.5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .new-btn:hover { background: var(--border); }
+
+  /* QR SECTION */
+  .qr-section {
+    text-align: center;
+    animation: fadeUp 0.6s ease both;
+    animation-delay: 0.2s;
+  }
+
+  .qr-section .card-title { justify-content: center; }
+  .qr-section .card-title::after { display: none; }
+
+  #qrcode {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  #qrcode canvas, #qrcode img {
+    border-radius: 8px;
+    border: 4px solid white;
+  }
+
+  .qr-url {
+    font-size: 0.72rem;
+    color: var(--muted);
+    word-break: break-all;
+    margin-top: 0.5rem;
+  }
+
+  .qr-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+  }
+
+  /* EMAILJS SETUP HINT */
+  .setup-hint {
+    background: rgba(79,142,247,0.07);
+    border: 1px solid rgba(79,142,247,0.25);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--muted);
+    animation: fadeUp 0.6s ease both;
+    animation-delay: 0.05s;
+  }
+
+  .setup-hint strong { color: var(--accent); }
+
+  .setup-hint ol {
+    margin-top: 0.6rem;
+    padding-left: 1.2rem;
+  }
+
+  .setup-hint code {
+    background: var(--surface2);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--text);
+    font-family: monospace;
+  }
+
+  /* ANIM */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">Betriebliches Vorschlagswesen</div>
+    <h1>Verbesserungsvorschlag<br>einreichen</h1>
+    <p>Teile deine Idee mit uns – jeder Vorschlag zählt und wird geprüft.</p>
+  </header>
+
+  <!-- EMAILJS SETUP HINT -->
+  <div class="setup-hint" id="setup-hint">
+    <strong>⚙️ Einrichtung erforderlich (einmalig, 5 Min.)</strong>
+    <ol>
+      <li>Kostenlosen Account bei <strong>emailjs.com</strong> erstellen</li>
+      <li>Email Service verbinden (z.B. Gmail)</li>
+      <li>Email Template anlegen – Template ID notieren</li>
+      <li>Im Code unten die drei Werte ersetzen:<br>
+        <code>YOUR_PUBLIC_KEY</code>, <code>YOUR_SERVICE_ID</code>, <code>YOUR_TEMPLATE_ID</code>
+      </li>
+    </ol>
+    <span style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;display:block;">
+      Dieser Hinweis ist nur für Admins sichtbar – einfach den <code>id="setup-hint"</code>-Block entfernen, wenn alles eingerichtet ist.
+    </span>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card" id="form-card">
+    <div class="card-title">Formular ausfüllen</div>
+
+    <div id="form-view">
+      <div class="field-row">
+        <div class="field">
+          <label for="name">Name <span class="req">*</span></label>
+          <input type="text" id="name" placeholder="Max Mustermann">
+          <div class="error-msg" id="err-name">Bitte Namen eingeben.</div>
+        </div>
+        <div class="field">
+          <label for="abteilung">Abteilung <span class="req">*</span></label>
+          <input type="text" id="abteilung" placeholder="z.B. Produktion">
+          <div class="error-msg" id="err-abteilung">Bitte Abteilung eingeben.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="titel">Titel des Vorschlags <span class="req">*</span></label>
+        <input type="text" id="titel" placeholder="Kurze, prägnante Bezeichnung">
+        <div class="error-msg" id="err-titel">Bitte einen Titel eingeben.</div>
+      </div>
+
+      <div class="field">
+        <label for="artikelnummer">Artikelnummer (bisherig) <span class="req">*</span></label>
+        <input type="text" id="artikelnummer" placeholder="z.B. ART-00123">
+        <div class="error-msg" id="err-artikelnummer">Bitte Artikelnummer eingeben.</div>
+      </div>
+
+      <div class="field">
+        <label for="beschreibung">Beschreibung <span class="req">*</span></label>
+        <textarea id="beschreibung" placeholder="Was soll verbessert werden? Warum? Wie könnte die Lösung aussehen?"></textarea>
+        <div class="error-msg" id="err-beschreibung">Bitte eine Beschreibung eingeben.</div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+        Vorschlag absenden →
+      </button>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div class="success-box" id="success-view">
+      <div class="success-icon">✓</div>
+      <h2>Danke für deinen Vorschlag!</h2>
+      <p>Dein Vorschlag wurde erfolgreich übermittelt.<br>Wir melden uns so bald wie möglich bei dir.</p>
+      <button class="new-btn" onclick="resetForm()">Weiteren Vorschlag einreichen</button>
+    </div>
+  </div>
+
+  <!-- QR CODE -->
+  <div class="card qr-section">
+    <div class="card-title">QR-Code für Mitarbeiter</div>
+    <div id="qrcode"></div>
+    <p class="qr-url" id="qr-url-text"></p>
+    <p class="qr-hint">Diesen QR-Code ausdrucken und im Betrieb aufhängen.<br>Mitarbeiter können ihn mit dem Smartphone scannen.</p>
+  </div>
+
+</div>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // ============================================================
+  // EMAILJS KONFIGURATION – hier deine Werte eintragen:
+  // ============================================================
+  const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // von emailjs.com → Account → API Keys
+  const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // von emailjs.com → Email Services
+  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // von emailjs.com → Email Templates
+  const EMPFAENGER_EMAIL    = 'c.nentwig@gmail.com';
+  // ============================================================
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  // FORM VALIDATION
+  function validate() {
+    let ok = true;
+    [
+      ['name', 'err-name'],
+      ['abteilung', 'err-abteilung'],
+      ['titel', 'err-titel'],
+      ['artikelnummer', 'err-artikelnummer'],
+      ['beschreibung', 'err-beschreibung']
+    ].forEach(([id, errId]) => {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      if (!el.value.trim()) {
+        el.classList.add('error');
+        err.classList.add('visible');
+        ok = false;
+      } else {
+        el.classList.remove('error');
+        err.classList.remove('visible');
+      }
+    });
+    return ok;
+  }
+
+  // SUBMIT
+  async function submitForm() {
+    if (!validate()) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Wird gesendet…';
+
+    // Collect data
+    const params = {
+      to_email:      EMPFAENGER_EMAIL,
+      name:          document.getElementById('name').value.trim(),
+      abteilung:     document.getElementById('abteilung').value.trim(),
+      titel:         document.getElementById('titel').value.trim(),
+      artikelnummer: document.getElementById('artikelnummer').value.trim(),
+      beschreibung:  document.getElementById('beschreibung').value.trim(),
+      datum:         new Date().toLocaleString('de-DE'),
+      anhang_info:   'Kein Anhang'
+    };
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').classList.add('visible');
+    } catch(err) {
+      alert('Fehler beim Senden. Bitte EmailJS-Konfiguration prüfen.\n\n' + JSON.stringify(err));
+      btn.disabled = false;
+      btn.innerHTML = 'Vorschlag absenden →';
+    }
+  }
+
+  // RESET
+  function resetForm() {
+    ['name','abteilung','titel','artikelnummer','beschreibung'].forEach(id => {
+      document.getElementById(id).value = '';
+      document.getElementById(id).classList.remove('error');
+    });
+    ['err-name','err-abteilung','err-titel','err-artikelnummer','err-beschreibung'].forEach(id => {
+      document.getElementById(id).classList.remove('visible');
+    });
+    document.getElementById('form-view').style.display = 'block';
+    document.getElementById('success-view').classList.remove('visible');
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').innerHTML = 'Vorschlag absenden →';
+  }
+
+  // QR CODE
+  const currentURL = window.location.href;
+  document.getElementById('qr-url-text').textContent = currentURL;
+  new QRCode(document.getElementById('qrcode'), {
+    text: currentURL,
+    width: 160,
+    height: 160,
+    colorDark: '#0f1117',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>
